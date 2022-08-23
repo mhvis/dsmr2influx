@@ -1,0 +1,56 @@
+name: dsmr2influx
+
+services:
+  influxdb:
+    image: influxdb:2.4
+    environment:
+      # Uncomment if you don't want to send telemetry data
+      #INFLUXD_REPORTING_DISABLED: "true"
+      # Automated setup
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: dsmr
+      DOCKER_INFLUXDB_INIT_PASSWORD: dsmr
+      DOCKER_INFLUXDB_INIT_ORG: dsmr
+      DOCKER_INFLUXDB_INIT_BUCKET: dsmr
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: dsmr
+
+    volumes:
+      - influxdb-data:/var/lib/influxdb2
+      - influxdb-config:/etc/influxdb2
+
+  app:
+    image: mhvis/dsmr2influx
+    build: .
+    environment:
+      # InfluxDB client settings, see https://github.com/influxdata/influxdb-client-python#via-environment-properties.
+      INFLUXDB_V2_URL: http://influxdb:8086
+      INFLUXDB_V2_ORG: dsmr
+      INFLUXDB_V2_TOKEN: dsmr
+      # InfluxDB bucket name for the DSMR data.
+      DSMR_BUCKET: dsmr
+      # DSMR P1 port version, valid choices are V2_2, V4, V5.
+      DSMR_SERIAL_SETTINGS: V5
+      # P1 port device file, usually /dev/ttyUSB0.
+      DSMR_DEVICE: /dev/ttyUSB0
+      # DSMR telegram specification, usually the same as DSMR_SERIAL_SETTINGS.
+      # For possible values, see: https://github.com/ndokter/dsmr_parser/blob/master/dsmr_parser/telegram_specifications.py
+      DSMR_TELEGRAM_SPECIFICATION: V5
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana-oss
+#    environment:
+#      # Uncomment if you want to enable anonymous access
+#      #GF_AUTH_ANONYMOUS_ENABLED: "true"
+    ports:
+      - 44757:3000
+    volumes:
+      - grafana-storage:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  influxdb-data:
+  influxdb-config:
+  grafana-storage:

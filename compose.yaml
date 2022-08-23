@@ -9,14 +9,18 @@ services:
       # Automated setup
       DOCKER_INFLUXDB_INIT_MODE: setup
       DOCKER_INFLUXDB_INIT_USERNAME: dsmr
-      DOCKER_INFLUXDB_INIT_PASSWORD: dsmr
+      # Minimum password length is 8 characters
+      DOCKER_INFLUXDB_INIT_PASSWORD: dsmr2influx
       DOCKER_INFLUXDB_INIT_ORG: dsmr
       DOCKER_INFLUXDB_INIT_BUCKET: dsmr
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: dsmr
-
     volumes:
       - influxdb-data:/var/lib/influxdb2
       - influxdb-config:/etc/influxdb2
+    # If you want to manage InfluxDB via its web UI, expose the port
+    #ports:
+    #  - 8086:8086
+    restart: unless-stopped
 
   app:
     image: mhvis/dsmr2influx
@@ -41,11 +45,11 @@ services:
 
   grafana:
     image: grafana/grafana-oss
-#    environment:
-#      # Uncomment if you want to enable anonymous access
-#      #GF_AUTH_ANONYMOUS_ENABLED: "true"
+    # Uncomment below if you want to enable anonymous access
+    #environment:
+    #  GF_AUTH_ANONYMOUS_ENABLED: "true"
     ports:
-      - 44757:3000
+      - 3000:3000
     volumes:
       - grafana-storage:/var/lib/grafana
     restart: unless-stopped

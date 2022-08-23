@@ -7,6 +7,7 @@ from typing import Dict, Iterable
 from urllib.request import urlopen, Request
 
 from influxdb_client import InfluxDBClient, Point
+from influxdb_client.client.write_api import SYNCHRONOUS
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +48,7 @@ def reading2point(reading: Dict) -> Iterable[Point]:
             # Decimal values are given as string, convert them to Decimal
             if isinstance(value, str):
                 value = Decimal(value)
-            p.field(f, value)
+            p.field(field, value)
     yield p
     # Extra device field
     if reading['extra_device_timestamp']:
@@ -58,10 +59,12 @@ def reading2point(reading: Dict) -> Iterable[Point]:
 
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
     parser = argparse.ArgumentParser(description='Import readings from DSMR-reader.')
-    parser.add_argument('api-url', help='URL of the DSMR-reader installation, without trailing slash, '
+    parser.add_argument('api_url', help='URL of the DSMR-reader installation, without trailing slash, '
                                         'e.g. http://localhost:8080 or https://dsmr.example.com.')
-    parser.add_argument('api-key', help='Auth key set in the DSMR-reader API configuration.')
+    parser.add_argument('api_key', help='Auth key set in the DSMR-reader API configuration.')
     args = parser.parse_args()
 
     # Number of results per API request, we could make this into an argument
@@ -72,10 +75,11 @@ if __name__ == '__main__':
 
     # Create InfluxDB client
     #
-    # We use the batching write API (which is the default). Therefore we need
-    # to make sure to close the client.
+    # We could use the batching API, however because we already fetch the data
+    # in batches from DSMR-reader I use the synchronous API, with the same
+    # batches as received from DSMR-reader.
     with InfluxDBClient.from_env_properties() as client:
-        with client.write_api() as write_api:
+        with client.write_api(write_options=SYNCHRONOUS) as write_api:
             imported = 0
             next_url = f'{args.api_url}/api/v2/datalogger/dsmrreading?limit={batch_size}'
             while next_url:
@@ -83,8 +87,7 @@ if __name__ == '__main__':
                 with urlopen(Request(next_url, headers={'Authorization': f'Token {args.api_key}'})) as f:
                     response = json.load(f)
                 # Write to InfluxDB
-                for result in response['results']:
-                    write_api.write(bucket=bucket, record=reading2point(result))
+                write_api.write(bucket=bucket, record=(reading2point(r) for r in response['results']))
 
                 next_url = response['next']
 

@@ -5,7 +5,6 @@ Stores P1 port data in a InfluxDB NoSQL database, to visualize with Grafana.
 Inspired by [psy0rz/p1_dsmr_to_influxdb](https://github.com/psy0rz/p1_dsmr_to_influxdb).
 Uses [ndokter/dsmr_parser](https://github.com/ndokter/dsmr_parser) to read the P1 port data.
 
-
 ## Getting started
 
 An easy way to deploy is via Docker Compose:
@@ -32,12 +31,12 @@ So it is safe to import multiple times.
 
 ## Backups
 
-
 ## A note on the InfluxDB schema
 
 Each telegram is stored as a `telegram` measurement in InfluxDB, and each field
 in the telegram is a field on the measurement.
-Field keys are the same as [OBIS names](https://github.com/ndokter/dsmr_parser/blob/master/dsmr_parser/telegram_specifications.py),
+Field keys are the same
+as [OBIS names](https://github.com/ndokter/dsmr_parser/blob/master/dsmr_parser/telegram_specifications.py),
 but in lowercase, for instance `electricity_used_tariff_1` and `instantaneous_voltage_l1`.
 
 Gas meter readings are stored in a separate measurement named `gas_meter`,

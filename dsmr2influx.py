@@ -77,9 +77,8 @@ if __name__ == '__main__':
             try:
                 telegram = parser.parse(telegram_string)
                 if first_iteration:
-                    logger.info('Received telegram:')
-                    for obis, val in telegram.items():
-                        logger.info('%s=%s', EN[obis].lower(), val)
+                    logger.info('Received telegram:\n%s',
+                                '\n'.join(f'{EN[k].lower()}={v}' for k, v in telegram.items()))
                     logger.info('Startup complete, writing telegrams to InfluxDB')
                     first_iteration = False
                 write_api.write(bucket=bucket, record=telegram2point(telegram))

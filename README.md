@@ -16,6 +16,11 @@ An easy way to deploy is via Docker Compose:
 
 Note: if you have the old version of Docker Compose installed, replace `docker compose` with `docker-compose`.
 
+Steps after deployment:
+
+* Open Grafana and add a data source for InfluxDB.
+* Create a new dashboard or import the sample at ... .
+
 ## Importing from DSMR-reader
 
 This command imports data from DSMR-reader into your InfluxDB instance.

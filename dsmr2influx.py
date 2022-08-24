@@ -43,6 +43,8 @@ def telegram_buffer(serial_handle) -> Iterable[str]:
     """Reads from the serial handle into a buffer and yields full telegram strings."""
     buffer = TelegramBuffer()
     while True:
+        # TODO: this call blocks SIGINT interrupts until new data arrives (I think),
+        #   which makes ctrl+c slow.
         data = serial_handle.readline()
         buffer.append(data.decode('ascii'))
         for telegram_str in buffer.get_all():
@@ -67,7 +69,7 @@ if __name__ == '__main__':
     # DSMR parser
     parser = TelegramParser(telegram_specification)
 
-    logger.info('DSMR2InfluxDB started, waiting for first telegram')
+    logger.info('Waiting for first telegram')
     first_iteration = True
 
     with Serial(port=device, **serial_settings) as serial_handle:
@@ -75,7 +77,10 @@ if __name__ == '__main__':
             try:
                 telegram = parser.parse(telegram_string)
                 if first_iteration:
-                    logger.info('Initial telegram: %s', {EN[k].lower(): str(v) for k, v in telegram.items()})
+                    logger.info('Received telegram:')
+                    for obis, val in telegram.items():
+                        logger.info('%s=%s', EN[obis].lower(), val)
+                    logger.info('Startup complete, writing telegrams to InfluxDB')
                     first_iteration = False
                 write_api.write(bucket=bucket, record=telegram2point(telegram))
 

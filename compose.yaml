@@ -16,7 +16,6 @@ services:
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: dsmr
     volumes:
       - influxdb-data:/var/lib/influxdb2
-      - influxdb-config:/etc/influxdb2
     # If you want to manage InfluxDB via its web UI, expose the port
     #ports:
     #  - 8086:8086
@@ -24,7 +23,6 @@ services:
 
   app:
     image: mhvis/dsmr2influx
-    build: .
     environment:
       # InfluxDB client settings, see https://github.com/influxdata/influxdb-client-python#via-environment-properties.
       INFLUXDB_V2_URL: http://influxdb:8086
@@ -45,9 +43,6 @@ services:
 
   grafana:
     image: grafana/grafana-oss
-    # Uncomment below if you want to enable anonymous access
-    #environment:
-    #  GF_AUTH_ANONYMOUS_ENABLED: "true"
     ports:
       - 3000:3000
     volumes:
@@ -56,5 +51,4 @@ services:
 
 volumes:
   influxdb-data:
-  influxdb-config:
   grafana-storage:

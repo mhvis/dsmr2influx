@@ -1,0 +1,4 @@
+# Compose configuration for development
+services:
+  app:
+    build: .

@@ -45,12 +45,17 @@ def reading2point(reading: Dict) -> Iterable[Point]:
     for col, field in READING_FIELD_MAP.items():
         value = reading[col]
         if value is not None:
-            # Decimal values are given as string, convert them to Decimal
+            # Decimal values are received as string, convert them to Decimal.
             if isinstance(value, str):
+                value = Decimal(value)
+            # The fields phase_power_current are stored as integer in DSMR-
+            # reader, however they should be Decimal as well to be equal to the
+            # telegram type.
+            if isinstance(value, int):
                 value = Decimal(value)
             p.field(field, value)
     yield p
-    # Extra device field
+    # Extra device field, is assumed to be the gas meter.
     if reading['extra_device_timestamp']:
         p = Point('gas_meter')
         p.time(reading['extra_device_timestamp'])

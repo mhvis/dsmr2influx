@@ -35,7 +35,9 @@ def telegram2point(telegram: Dict) -> Iterable[Point]:
             else:
                 yield Point('gas_meter').time(v.datetime).field('reading', v.value)
         elif isinstance(v, ProfileGenericObject):
-            logger.warning("The power_event_failure_log line is not yet implemented, telegram value: %s", v)
+            # TODO: power_event_failure_log is not yet implemented.
+            pass
+            # logger.warning("The power_event_failure_log line is not yet implemented, telegram value: %s", v)
         else:
             logger.warning("Got unknown object in telegram: %s", v)
     yield p

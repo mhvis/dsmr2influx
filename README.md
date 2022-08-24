@@ -1,20 +1,19 @@
-# DSMR2InfluxDB
+# DSMR2Influx
 
-Stores P1 port data in a InfluxDB NoSQL database, to visualize with Grafana.
+Stores P1 port data in a InfluxDB database, to visualize with Grafana.
 
 Inspired by [psy0rz/p1_dsmr_to_influxdb](https://github.com/psy0rz/p1_dsmr_to_influxdb).
 Uses [ndokter/dsmr_parser](https://github.com/ndokter/dsmr_parser) to read the P1 port data.
 
 ## Getting started
 
-An easy way to deploy is via Docker Compose:
+With Docker Compose:
 
-1. Copy or download `compose.yaml` to a desired location.
+1. Copy or download `compose.yaml` to a desired location:
+  `wget https://github.com/mhvis/dsmr2influx/raw/master/compose.yaml`.
 2. Modify the configuration as required.
 3. Run `docker compose up -d`.
 4. To see if the containers have started correctly, use `docker compose logs -f`.
-
-Note: if you have the old version of Docker Compose installed, replace `docker compose` with `docker-compose`.
 
 Steps after deployment:
 

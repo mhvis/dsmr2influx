@@ -1,5 +1,6 @@
 import logging
 import os
+from datetime import datetime
 from typing import Dict, Iterable
 
 import dsmr_parser.clients
@@ -24,8 +25,9 @@ def telegram2point(telegram: Dict) -> Iterable[Point]:
         obis_name = EN[k].lower()
 
         if isinstance(v, CosemObject):
-            # All CosemObjects are converted to fields, timestamp values are converted to strings
-            p.field(obis_name, v.value)
+            # All CosemObjects are converted to fields, timestamp values are converted to strings (in ISO format)
+            val = v.value if not isinstance(v.value, datetime) else str(v.value)
+            p.field(obis_name, val)
         elif isinstance(v, MBusObject):
             # The MBusObject is assumed to be a gas meter reading and yields a separate Point/measurement
             if obis_name not in ('gas_meter_reading', 'hourly_gas_meter_reading'):

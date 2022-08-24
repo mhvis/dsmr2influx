@@ -20,6 +20,12 @@ Steps after deployment:
 * Open Grafana and add a data source for InfluxDB.
 * Create a new dashboard or import the sample at ... .
 
+### Raspberry Pi
+
+The Docker image is only for amd64 platforms.
+To run this image on an arm platform, build it yourself.
+(TODO: add arm image.)
+
 ## Importing from DSMR-reader
 
 This command imports data from DSMR-reader into your InfluxDB instance.
@@ -28,6 +34,9 @@ It requires that the DSMR-reader API is enabled and accessible via the container
 ```shell
 docker compose run app python dsmrreaderimport.py <api-url> <api-key>
 ```
+
+Note: when using `localhost` as url, because the command runs in a Docker
+container, localhost does not refer to the Docker host. Instead use `172.17.0.1`.
 
 When the InfluxDB instance already contains measurements,
 existing measurements with the same timestamp get overridden.

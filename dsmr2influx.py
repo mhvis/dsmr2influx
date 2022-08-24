@@ -53,8 +53,13 @@ def telegram_buffer(serial_handle) -> Iterable[str]:
             yield telegram_str
 
 
+def telegram2str(t) -> str:
+    """'Pretty print' a parsed telegram."""
+    return '\n'.join(f'{EN[k].lower()}={v}' for k, v in t.items())
+
+
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG if os.getenv('DSMR_DEBUG') else logging.INFO)
 
     # Read InfluxDB configuration
     #
@@ -76,11 +81,12 @@ if __name__ == '__main__':
 
     with Serial(port=device, **serial_settings) as serial_handle:
         for telegram_string in telegram_buffer(serial_handle):
+            logger.debug('Telegram: %s', telegram_string)
             try:
                 telegram = parser.parse(telegram_string)
+                logger.debug('Parsed telegram:\n%s', telegram2str(telegram))
                 if first_iteration:
-                    logger.info('Received telegram:\n%s',
-                                '\n'.join(f'{EN[k].lower()}={v}' for k, v in telegram.items()))
+                    logger.info('Received telegram:\n%s', telegram2str(telegram))
                     logger.info('Startup complete, writing telegrams to InfluxDB')
                     first_iteration = False
                 write_api.write(bucket=bucket, record=telegram2point(telegram))

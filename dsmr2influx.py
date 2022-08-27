@@ -66,7 +66,7 @@ if __name__ == '__main__':
     # Read InfluxDB configuration
     #
     # We use the synchronous API, thus it is not necessary to close or flush.
-    client = InfluxDBClient.from_env_properties()
+    client = InfluxDBClient.from_env_properties(enable_gzip=bool(os.getenv('DSMR_GZIP')))
     write_api = client.write_api(write_options=SYNCHRONOUS)
     bucket = os.getenv('DSMR_BUCKET')
 

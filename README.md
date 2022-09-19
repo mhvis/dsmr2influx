@@ -5,7 +5,8 @@ Stores P1 port data in a InfluxDB database, to visualize with Grafana.
 Inspired by [psy0rz/p1_dsmr_to_influxdb](https://github.com/psy0rz/p1_dsmr_to_influxdb).
 Uses [ndokter/dsmr_parser](https://github.com/ndokter/dsmr_parser) to read the P1 port data.
 
-NOTE: I switched to PostgreSQL with TimescaleDB for performance and stability reasons.
+NOTE: I switched to PostgreSQL with TimescaleDB for performance, stability and flexibility reasons.
+This repo is not maintained.
 See [mhvis/p1postgres](https://github.com/mhvis/p1postgres).
 
 ## Getting started
